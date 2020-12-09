@@ -1,3 +1,9 @@
+commit 6a12b89faac06a734a8263ea3f068d444cc40af1
+Author: Ben Piro <benpiro1118@gmail.com>
+Date:   Wed Dec 9 11:50:09 2020 -0500
+
+    made small bash script to compile and link
+
 commit 1bf0905b363f1fb438e4bcb0e0601b27cb15fd68
 Author: Ben Piro <benpiro1118@gmail.com>
 Date:   Wed Dec 9 11:34:08 2020 -0500
