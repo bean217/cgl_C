@@ -2,20 +2,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(void) {
-	init();
-	
-	WINDOW * win = newwin(nlines, ncols, y0, x0);
-
-	endit();	
-}
-
 void init() {
-	initscr();
-	cbreak();
-	noecho();
+        initscr();
+        cbreak();
+        noecho();
 }
 
 void endit() {
-	endwin();
+        endwin();
+}
+
+int main(void) {
+	init();
+	
+	int i = 0;
+	int j = 0;
+	
+	while (i < 10) {
+		printw("Hello World !!!");
+		refresh();
+		getch();
+		clear();
+		for (j = 0; j < i; j++) {printw(" ");}
+		i++;
+	}
+
+	endit();	
 }
