@@ -1,0 +1,4 @@
+MENU SCREEN
+- include options to select game array size
+- display generations based on the current window size
+	- This would be between current window size and the game array size

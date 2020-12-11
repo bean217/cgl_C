@@ -1,3 +1,15 @@
+commit 311422b61c07f9135fb2aba24576ee7f2bc1ce60
+Author: Ben Piro <benpiro1118@gmail.com>
+Date:   Thu Dec 10 00:58:18 2020 -0500
+
+    Messing around with ncurses refresh()
+
+commit 69a86bf065ea2f2a02575db306fb644bf713d9f8
+Author: Ben Piro <benpiro1118@gmail.com>
+Date:   Wed Dec 9 12:01:56 2020 -0500
+
+    Got started learning ncurses
+
 commit 6a12b89faac06a734a8263ea3f068d444cc40af1
 Author: Ben Piro <benpiro1118@gmail.com>
 Date:   Wed Dec 9 11:50:09 2020 -0500
