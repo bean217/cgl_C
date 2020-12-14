@@ -42,13 +42,21 @@ int main(void) {
 	int startx = (COLS - width) / 2;
 	refresh();
 	win = create_win(height, width, starty, startx);
-	getch();
-	getch();
-	getch();
-	getch();
-	delwin(win);
-	refresh();
-	getch();
+	int oldLines = LINES;
+	int oldCols = COLS;
+	while (1) {
+		if (LINES != oldLines || COLS != oldCols) {
+			resizeterm(LINES, COLS);	
+		}
+		oldLines = LINES;
+		oldCols = COLS;
+		starty = (LINES - height) / 2;
+		startx = (COLS - height) / 2;
+		mvwin(win, starty, startx);
+		wrefresh(win);
+		refresh();
+		if (getch() == 'k') break;
+	}	
 
 	/*
 	int rows, cols, i, j;
