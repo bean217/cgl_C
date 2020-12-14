@@ -2,3 +2,20 @@ MENU SCREEN
 - include options to select game array size
 - display generations based on the current window size
 	- This would be between current window size and the game array size
+elements:
+- Title "GAME OF LIFE" in some fancy text
+- "Play" Button
+	- Loads start screen where the user can start drawing
+	- Button at the top of the window to start generations
+	- Button at the top of window to pause, restart, exit
+	- Text at the top of the window denoting what to do
+- "Options" Button
+	- Can set the dimensions of the game start screen
+	- Default size is the window size
+- "Exit" Button
+	- Closes the program
+
+OPTIONS SCREEN
+- get input from the user to modify dimensions
+- "Back" button to go back to the main menu
+	- user can also hit "escape"

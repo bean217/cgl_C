@@ -1,27 +1,22 @@
 #include <curses.h>
+#include <menu.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include "cgl.h"
-
-static struct winsize WS;
+#include "curse_lib.h"
 
 void init() {
         initscr();
         cbreak();
         noecho();
 
-	ioctl(STDIN_FILENO, TIOCGWINSZ, &WS);
-	printf("ROWS: %d\n", WS.ws_row);
-	printf("COLS: %d\n", WS.ws_col);
+	struct winsize w;
 
-	WINDOW local_win;
-	int width, height;
-
-	getmaxyx(&local_win, height, width);
-	printf("ROWS: %d\n", height);
-	printf("COLS: %d\n", width);
+	ioctl(STDIN_FILENO, TIOCGWINSZ, &w);
+	printf("ROWS: %d\n", w.ws_row);
+	printf("COLS: %d\n", w.ws_col);
 }
 
 void endit() {
@@ -37,6 +32,25 @@ void init_game() {
 int main(void) {
 	init();
 
+	struct winsize w;
+	ioctl(STDIN_FILENO, TIOCGWINSZ, &w);
+	WINDOW *win;
+	
+	int height = 3;
+	int width = 10;
+	int starty = (LINES - height) / 2;
+	int startx = (COLS - width) / 2;
+	refresh();
+	win = create_win(height, width, starty, startx);
+	getch();
+	getch();
+	getch();
+	getch();
+	delwin(win);
+	refresh();
+	getch();
+
+	/*
 	int rows, cols, i, j;
 	rows = 40;
 	cols = 80;
@@ -59,6 +73,6 @@ int main(void) {
 		}
 		printf("\n");
 	}
-
+	*/
 	endit();	
 }
