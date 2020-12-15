@@ -4,19 +4,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 #include "cgl.h"
 #include "curse_lib.h"
 
 void init() {
-        initscr();
-        cbreak();
-        noecho();
+	struct winsize w;
 
-	//struct winsize w;
+	ioctl(STDIN_FILENO, TIOCGWINSZ, &w);
+	printf("ROWS: %d\n", w.ws_row);
+	printf("COLS: %d\n", w.ws_col);
 
-	//ioctl(STDIN_FILENO, TIOCGWINSZ, &w);
-	//printf("ROWS: %d\n", w.ws_row);
-	//printf("COLS: %d\n", w.ws_col);
+	initscr(); // initializes stdscr
+        cbreak(); // allows CTRL-C to escape stdscr
+        noecho(); // disable character echoing
+	curs_set(0); // hide default cursor
 }
 
 void endit() {
@@ -47,7 +49,7 @@ void print_in_middle(WINDOW *win, int starty, int startx, int width, char *strin
 	refresh();
 }
 
-void menus() {
+void menus() {	
 	ITEM **my_items;
 	int c;
 	MENU *my_menu;
@@ -121,102 +123,73 @@ void menus() {
 	
 }
 
-void print_menu(WINDOW *menu_win, int highlight) {
-	int x, y, i;
-	x = 2;
-	y = 2;
-	box(menu_win, 0, 0);
+void custom_menu() {
+	struct winsize w;
+
+	ioctl(STDIN_FILENO, TIOCGWINSZ, &w);
+	int height = w.ws_row;
+	int width = w.ws_col;
+	
+	WINDOW *win;
 	char *choices[] = {"Play", "Options", "Exit", (char *)NULL};
-	int n_choices = 3;
-	for (i = 0; i < n_choices; ++i) {
-		if (highlight == i + 1) {
-			wattron(menu_win, A_REVERSE);
-			mvwprintw(menu_win, y, x, "%s", choices[i]);
-			wattroff(menu_win, A_REVERSE);
+	char item[8];
+	int ch, i, n_choices;
+	win = newwin(height-2, width-10, 1, 1); // create new window
+	box(win, 0, 0); // set default borders
+	mvwaddch(win, 0, 1, ACS_RTEE);
+	int t_len = strlen("Conway's Game of Life");
+	for (i = 0; i < t_len; ++i) {
+		mvwaddch(win, 0, 2 + i, "Conway's Game of Life"[i]);
+	}
+	mvwaddch(win, 0, 2 + t_len, ACS_LTEE);
+
+	n_choices = 3;
+	// print menu items and highlight them
+	for (i = 0; i < n_choices; i++) {
+		if (i == 0) {
+			wattron(win, A_STANDOUT); // highlight first item
 		} else {
-			mvwprintw(menu_win, y, x, "%s", choices[i]);
+			wattroff(win, A_STANDOUT); // dont on rest
 		}
-		++y;
+		sprintf(item, "%-7s", choices[i]);
+		mvwprintw(win, i+1, 2, "%s", item);
 	}
-	wrefresh(menu_win);
-}
+	wrefresh(win); // update terminal screen
+	i = 0;
+	keypad(win, TRUE); // enables keyboard input
+	
+	// get user input until user types 'q'
+	while ((ch = wgetch(win)) != 'q') {
+		sprintf(item, "%-7s", choices[i]);
+		mvwprintw(win, i+1, 2, "%s", item);
 
-void report_choice(int mouse_x, int mouse_y, int *p_choice) {
-	int i, j, choice;
-	int startx = 0;
-	int starty = 0;
-	i = startx + 2;
-	j = starty + 3;
-	char *choices[] = {"Play", "Options", "Exit", (char *)NULL};
-        int n_choices = 3;
-	for (choice = 0; choice < n_choices; ++choice) {
-		if (mouse_y == j + choice && mouse_x >= i && mouse_x <= i + strlen(choices[choice])) {
-			if (choice == n_choices - 1) *p_choice = -1;
-			else *p_choice = choice + 1;
-			break;
-		}
-	}
-}
-
-void mouse_menu() {
-	int WIDTH = 30;
-	int HEIGHT = 10;
-	int startx = 0;
-	int starty = 0;
-
-	char *choices[] = {"Play", "Options", "Exit", (char *)NULL};
-	int n_choices = 3;
-
-	int x, choice = 0;
-	WINDOW *menu_win;
-	MEVENT event;
-
-	startx = (80 - WIDTH) / 2;
-	starty = (24 - HEIGHT) / 2;
-
-	attron(A_REVERSE);
-	mvprintw(23, 1, "Click on Exit to quit (Works best in a virtual console)");
-	refresh();
-	attroff(A_REVERSE);
-
-	// print menu for first time
-	menu_win = newwin(HEIGHT, WIDTH, starty, startx);
-	print_menu(menu_win, 1);
-
-	// get all mouse events
-	mousemask(ALL_MOUSE_EVENTS, NULL);
-
-	int c, exit;
-	exit = 0;
-	while (1) {
-		c = wgetch(menu_win);
-		switch (c) {
-			case KEY_MOUSE:
-				if (getmouse(&event) == OK) {
-					// when user clicks left button
-					if (event.bstate & BUTTON1_PRESSED) {
-						report_choice(event.x + 1, event.y + 1, &choice);
-						if (choice == -1) exit = 1;
-						if (!exit) {
-							mvprintw(22, 1, "Choice made is : %d String Chosen is \"%10s\"", choice, choices[choice - 1]);
-							refresh();
-						}
-					}
-				}
-				if (!exit) {
-					print_menu(menu_win, choice);
-				}
+		// incr/decr highlight based on input
+		switch (ch) {
+			case KEY_UP:
+				i--;
+				i = (i < 0) ? 2: i;
+				break;
+			case KEY_DOWN:
+				i++;
+				i = (i > n_choices - 1) ? 0 : i;
 				break;
 		}
-		if (exit) break;
+		// highlight the next item in the list
+		wattron(win, A_STANDOUT);
+
+		sprintf(item, "%-7s", choices[i]);
+		mvwprintw(win, i+1, 2, "%s", item);
+		wattroff(win, A_STANDOUT);
 	}
+	delwin(win);
 }
 
 int main(void) {
 	init();
 
 	//menus();
-	mouse_menu();
+
+	custom_menu();
 
 	/*
 	WINDOW *win;
