@@ -5,6 +5,18 @@
 /// Date: 12/13/2020
 
 #include <curses.h>
+#include <stdlib.h>
+/*
+Menu *create_menu(int height, int width, int starty, int startx, char * title) {
+	Menu *menu = NULL;
+	menu = (Menu *)calloc(1, sizeof(Menu));
+	menu->height = height;
+	menu->width = width;
+	menu->starty = starty;
+	menu->startx = startx;
+	menu->title = title;
+}
+*/
 
 WINDOW *create_win(int height, int width, int starty, int startx) {
 	WINDOW *local_win;

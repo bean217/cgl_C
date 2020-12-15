@@ -4,21 +4,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
+#include <signal.h>
 #include "cgl.h"
 #include "curse_lib.h"
 
 void init() {
-	struct winsize w;
-
-	ioctl(STDIN_FILENO, TIOCGWINSZ, &w);
-	printf("ROWS: %d\n", w.ws_row);
-	printf("COLS: %d\n", w.ws_col);
-
 	initscr(); // initializes stdscr
         cbreak(); // allows CTRL-C to escape stdscr
         noecho(); // disable character echoing
 	curs_set(0); // hide default cursor
+	refresh();
 }
 
 void endit() {
@@ -124,17 +119,11 @@ void menus() {
 }
 
 void custom_menu() {
-	struct winsize w;
-
-	ioctl(STDIN_FILENO, TIOCGWINSZ, &w);
-	int height = w.ws_row;
-	int width = w.ws_col;
-	
 	WINDOW *win;
 	char *choices[] = {"Play", "Options", "Exit", (char *)NULL};
 	char item[8];
 	int ch, i, n_choices;
-	win = newwin(height-2, width-10, 1, 1); // create new window
+	win = newwin(LINES, COLS, 0, 0); // create new window
 	box(win, 0, 0); // set default borders
 	mvwaddch(win, 0, 1, ACS_RTEE);
 	int t_len = strlen("Conway's Game of Life");
@@ -157,6 +146,10 @@ void custom_menu() {
 	wrefresh(win); // update terminal screen
 	i = 0;
 	keypad(win, TRUE); // enables keyboard input
+	
+
+	int oldLines = LINES;
+	int oldCols = COLS;
 	
 	// get user input until user types 'q'
 	while ((ch = wgetch(win)) != 'q') {
@@ -184,12 +177,62 @@ void custom_menu() {
 	delwin(win);
 }
 
+void handle_winch() {
+	endwin();
+	refresh();
+	clear();
+}
+
+void my_menu() {
+	WINDOW *win;
+	win = newwin(LINES, COLS, 0, 0);
+	box(win, 0, 0);
+	keypad(win, TRUE);
+	mvwprintw(win, 1, 1, "COLS = %d, LINES = %d", COLS, LINES);
+	wrefresh(win);
+
+	int key;
+	while ((key = getch()) != 'q') {
+		if (key == KEY_RESIZE) {
+			handle_winch();
+			wrefresh(win);
+
+			wresize(win, LINES, COLS);
+			mvwprintw(win, 0, 0, "COLS = %d, LINES = %d", COLS, LINES);
+			box(win, 0, 0);
+			wrefresh(win);
+		}
+	}
+}
+
 int main(void) {
 	init();
 
 	//menus();
 
-	custom_menu();
+	//custom_menu();
+
+	//my_menu();
+	
+	WINDOW *win;
+	win = newwin(LINES, COLS, 0, 0);
+	mvwprintw(win, 1, 1, "COLS = %d, LINES = %d", COLS, LINES);
+	box(win, 0, 0);
+	wrefresh(win);
+	int key;
+	while ((key = getch()) != 'q') {
+		if (key == KEY_RESIZE) {
+			endwin();
+			refresh();
+			werase(win);
+			wresize(win, LINES, COLS);
+			box(win, 0, 0);
+			mvwprintw(win, 1, 1, "COLS = %d, LINES = %d", COLS, LINES);
+			wrefresh(win);
+		}
+	}
+	
+
 
 	/*
 	WINDOW *win;
