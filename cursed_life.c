@@ -8,6 +8,8 @@
 #include "cgl.h"
 #include "curse_lib.h"
 
+static WINDOW * win;
+
 void init() {
 	initscr(); // initializes stdscr
         cbreak(); // allows CTRL-C to escape stdscr
@@ -21,10 +23,10 @@ void endit() {
 }
 
 void draw() {
-	WINDOW *win;
-	win = newwin(LINES, COLS, 0, 0);
 	box(win, 0, 0);
 	mvwprintw(win, 1, 1, "COLS = %d, LINES = %d", COLS, LINES);
+	
+	/*
 	char *str = "Game of Life";
 	int y, x;
 	getmaxyx(win, y, x);
@@ -36,50 +38,15 @@ void draw() {
 		mvwprintw(win, (y / 2) + i, (x - strlen(choices[i])) / 2, "%s", choices[i]);
 		i++;
 	}
+	*/
 	wrefresh(win);
 }
 
-void resizeHandler(int);
-
-void resizeHandler(int sig) {
-	//int nh, nw;
-	//getmaxyx(stdscr, nh, nw);
-	erase();
-	refresh();
-	draw();
-	signal(SIGWINCH, resizeHandler);
-}
 
 int main(void) {
 	init();
-	draw();
-	signal(SIGWINCH, resizeHandler);
-	while (getch() != 'q') {}
-/*
-	//menus();
-
-	//custom_menu();
-
-	//my_menu();
-	
-	WINDOW *win;
 	win = newwin(LINES, COLS, 0, 0);
-
-	box(win, 0, 0);
-	mvwprintw(win, 1, 1, "COLS = %d, LINES = %d", COLS, LINES);
-	char *str = "Game of Life";
-	int y, x;
-	getmaxyx(win, y, x);
-	mvwprintw(win, y / 3, (x - strlen(str)) / 2, "%s", str);
-
-	// display options
-	char *choices[] = {"Play", "Options", "Quit", (char *)NULL};
-	int i = 0;
-	while (choices[i] != (char *)NULL) {
-		mvwprintw(win, (y / 2) + i, (x - strlen(choices[i])) / 2, "%s", choices[i]);	
-		i++;
-	}
-	wrefresh(win);
+	draw();
 
 	int key;
 	while ((key = getch()) != 'q') {
@@ -90,22 +57,12 @@ int main(void) {
 			werase(win);
 			wresize(win, (LINES < 25) ? 25 : LINES, (COLS < 75) ? 75 : COLS);
 			
-			box(win, 0, 0);
-			mvwprintw(win, 1, 1, "COLS = %d, LINES = %d", COLS, LINES);
-			getmaxyx(win, y, x);
-			mvwprintw(win, y / 3, (x - strlen(str)) / 2, "%s", str);
-			char *choices[] = {"Play", "Options", "Quit", (char *)NULL};
-			int i = 0;
-			while (choices[i] != (char *)NULL) {
-				mvwprintw(win, (y / 2) + i, (x - strlen(choices[i])) / 2, "%s", choices[i]);
-				i++;
-			}
-			wrefresh(win);
+			draw();
 		}
 		
 
 	}
-*/
+
 	/*
 	WINDOW *win;
 	
