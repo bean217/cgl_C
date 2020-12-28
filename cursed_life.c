@@ -8,7 +8,6 @@
 #include "curse_lib.h"
 
 static WINDOW * win;
-static MEVENT event;
 
 void init() {
 	initscr(); // initializes stdscr
@@ -28,27 +27,17 @@ void draw() {
 	box(win, 0, 0);
 	mvwprintw(win, 1, 1, "COLS = %d, LINES = %d", COLS, LINES);
 
-	if (getmouse(&event) == OK) {
-		wmouse_trafo(win, &event.y, &event.x, TRUE);
-		mvwprintw(win,2, 1, "COOR X = %d, COOR Y = %d", event.x, event.y);
-		mvwaddch(win, event.y, event.x, ACS_DIAMOND);
-	} else {
-		mvwprintw(win, 2, 1, "NO MOUSE EVENT");
-	}
-
-	/*
 	char *str = "Game of Life";
 	int y, x;
 	getmaxyx(win, y, x);
 	mvwprintw(win, y / 3, (x - strlen(str)) / 2, "%s", str);
-	
+
 	char *choices[] = {"Play", "Options", "Exit", (char *)NULL};
 	int i = 0;
 	while (choices[i] != (char *)NULL) {
 		mvwprintw(win, (y / 2) + i, (x - strlen(choices[i])) / 2, "%s", choices[i]);
 		i++;
 	}
-	*/
 	wrefresh(win);
 }
 
@@ -72,8 +61,7 @@ int main(void) {
 			wresize(win, (LINES < 25) ? 25 : LINES, (COLS < 75) ? 75 : COLS);	
 		}
 		// draw the window
-		draw();	
-
+		draw();
 	}
 
 	endit();	

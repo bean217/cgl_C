@@ -17,17 +17,31 @@ typedef struct Button_t {
 } Button;
 */
 
-typedef struct Menu_t {
-	int height;
-	int width;
-	int starty;
-	int startx;
-	char *title;
-	char **buttons;
-	WINDOW * win;
-} Menu;
+typedef struct Game_t Game_t;
 
-Menu *create_menu(int height, int width, int starty, int startx, char * title);
+typedef struct {
+	Game_t * game;
+} Scene_t;
 
-WINDOW *create_win(int height, int width, int starty, int startx);
+struct Game_t {
+	Scene_t ** scenes;
+};
+
+typedef struct {
+	Scene_t * scene;
+} Window_t;
+
+typedef struct {
+	Window_t * window;
+} Text_t;
+
+typedef struct BUTTON_TYPE {
+	Window_t * window;
+	void (*action)(struct BUTTON_TYPE *);
+} Button_t;
+
+typedef union {
+	Text_t text;
+	Button_t button;
+} Component_t;
 #endif
