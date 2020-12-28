@@ -18,30 +18,40 @@ typedef struct Button_t {
 */
 
 typedef struct Game_t Game_t;
+typedef struct Scene_t Scene_t;
+typedef struct Window_t Window_t;
+typedef struct Text_t Text_t;
+typedef struct Button_t Button_t;
+typedef union Component_t Component_t;
 
-typedef struct {
+
+struct Scene_t {
 	Game_t * game;
-} Scene_t;
+	Window_t ** windows;
+	int num_windows;
+};
 
 struct Game_t {
 	Scene_t ** scenes;
+	int num_scenes;
 };
 
-typedef struct {
+struct Window_t {
 	Scene_t * scene;
-} Window_t;
+};
 
-typedef struct {
+struct Text_t {
 	Window_t * window;
-} Text_t;
+};
 
-typedef struct BUTTON_TYPE {
+struct Button_t {
 	Window_t * window;
-	void (*action)(struct BUTTON_TYPE *);
-} Button_t;
+	void (*action)(Button_t *);
+};
 
-typedef union {
+union Component_t {
 	Text_t text;
 	Button_t button;
-} Component_t;
+};
+
 #endif

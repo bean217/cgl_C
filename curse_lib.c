@@ -6,22 +6,48 @@
 
 #include <curses.h>
 #include <stdlib.h>
-/*
-Menu *create_menu(int height, int width, int starty, int startx, char * title) {
-	Menu *menu = NULL;
-	menu = (Menu *)calloc(1, sizeof(Menu));
-	menu->height = height;
-	menu->width = width;
-	menu->starty = starty;
-	menu->startx = startx;
-	menu->title = title;
-}
-*/
+#include <assert.h>
+#include "curse_lib.h"
 
-WINDOW *create_win(int height, int width, int starty, int startx) {
-	WINDOW *local_win;
-	local_win = newwin(height, width, starty, startx);
-	box(local_win, 0, 0);
-	wrefresh(local_win);
-	return local_win;
+// if the number of scenes is less than 1, scenes unallocated and set to NULL
+Game_t * new_game(int num_scenes) {
+	Game_t * game = NULL;
+	game = (Game_t *)calloc(1, sizeof(Game_t));
+
+	game->scenes = (num_scenes < 1) ? 
+		NULL : (Scene_t **)calloc(num_scenes, sizeof(Scene_t *));
+	game->num_scenes = num_scenes;
+	return game;
+}
+
+Scene_t * new_scene(Game_t * game, int num_windows) {
+	Scene_t * scene = NULL;
+	scene->game = game;
+	scene = (Scene_t *)calloc(1, sizeof(Scene_t));
+	scene->windows = (num_windows < 1) ? 
+		NULL : (Window_t **)calloc(num_windows, sizeof(Window_t *));
+	scene->num_windows = num_windows;
+	return scene;
+}
+
+
+
+void del_scene(Scene_t * scene) {
+	int i;
+	if (scene->windows != NULL) {
+		for (i = 0; i < scene->num_windows; i++) {
+			// TODO del_window((scene->windows)[i]);
+		}
+	}
+	free(scene);
+}
+
+void del_game(Game_t * game) {
+	int i;
+	if (game->scenes != NULL) {
+		for (i = 0; i < game->num_scenes; i++) {
+			// TODO del_scene((game->scenes)[i]);
+		}
+	}
+	free(game);
 }
