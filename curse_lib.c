@@ -30,7 +30,14 @@ Scene_t * new_scene(Game_t * game, int num_windows) {
 	return scene;
 }
 
+Window_t * new_window(Scene_t * scene) {
+	Window_t * win;
+	return win;
+}
 
+void del_window(Window_t * window) {
+
+}
 
 void del_scene(Scene_t * scene) {
 	int i;
