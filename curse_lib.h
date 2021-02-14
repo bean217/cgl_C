@@ -41,11 +41,13 @@ struct Window_t {
 };
 
 struct Text_t {
-	Window_t * window;
+	Window_t * window; // reference to parent window
+	char * text;
+	int length;
 };
 
 struct Button_t {
-	Window_t * window;
+	Window_t * window; // reference to parent window
 	void (*action)(Button_t *);
 };
 
